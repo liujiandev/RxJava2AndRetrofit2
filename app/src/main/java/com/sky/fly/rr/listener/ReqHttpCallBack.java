@@ -13,13 +13,15 @@ public interface ReqHttpCallBack<T>
     /**
      * 请求成功
      * @param result
+     * @param reqTag
      */
-    public void reqSuccess(T result);
+    public void reqSuccess(T result,String reqTag);
 
     /**
      * 请求失败
      * @param code
      * @param msg
+     * @param reqTag
      */
-    public void reqOnError(String code,String msg);
+    public void reqOnError(String code,String msg,String reqTag);
 }

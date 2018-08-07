@@ -27,17 +27,14 @@ public class LoginPrensenter extends BasePrensenter<ILoginView<UserInfoBean>,Use
     public void login(String userName,String userPassword)
     {
         uiView.showProgressView("加载中...");
-        addObservable("login", httpApi.login(userName, userPassword), new ReqHttpCallBack<UserInfoBean>()
-        {
+        addObservable("login", httpApi.login(userName, userPassword), new ReqHttpCallBack<UserInfoBean>() {
             @Override
-            public void reqSuccess(UserInfoBean result)
-            {
+            public void reqSuccess(UserInfoBean result, String reqTag) {
                 uiView.loginResult(result);
             }
 
             @Override
-            public void reqOnError(String code, String msg)
-            {
+            public void reqOnError(String code, String msg, String reqTag) {
                 uiView.showPrompt(msg);
             }
         });

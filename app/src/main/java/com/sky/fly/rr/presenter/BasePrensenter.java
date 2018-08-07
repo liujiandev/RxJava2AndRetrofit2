@@ -74,18 +74,18 @@ public abstract class BasePrensenter<V extends IBaseView,T> implements IBasePren
                 String resultCode = tBaseResultBean.getCode();
                 if(!StringUtils.isEmpty(resultCode) && StringUtils.equals(resultCode,"1"))
                 {
-                    reqHttpCallBack.reqSuccess(tBaseResultBean.getResultBean());
+                    reqHttpCallBack.reqSuccess(tBaseResultBean.getResultBean(),tag);
                 }
                 else
                 {
-                    reqHttpCallBack.reqOnError(resultCode,tBaseResultBean.getMsg());
+                    reqHttpCallBack.reqOnError(resultCode,tBaseResultBean.getMsg(),tag);
                 }
             }
 
             @Override
             public void onError(Throwable e)
             {
-                reqHttpCallBack.reqOnError("-100",e.getMessage());
+                reqHttpCallBack.reqOnError("-100",e.getMessage(),tag);
                 reqComplete(tag);
             }
 
