@@ -1,5 +1,8 @@
 apply plugin: 'com.android.application'
-
+//获取当前时间
+def getCurrentTime() {
+    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
+}
 android {
     compileSdkVersion 26
     defaultConfig {
@@ -9,17 +12,77 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        flavorDimensions "versionCode"
     }
+
+    signingConfigs {
+        release {
+            keyAlias 'sky'
+            keyPassword '151253'
+            storeFile file('sky.jks')
+            storePassword '151253'
+        }
+    }
+
     buildTypes {
+        debug{
+            signingConfig signingConfigs.release
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 
     dataBinding {
         enabled = true
     }
+
+    //渠道Flavors
+     productFlavors {
+         xiaomi {
+             manifestPlaceholders = [UMENG_CHANNEL_VALUE: "xiaomi"]
+         }
+         wandoujia {
+             manifestPlaceholders = [UMENG_CHANNEL_VALUE: "wandoujia"]
+         }
+     }
+
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            if (outputFileName.endsWith('.apk')) {
+                //新名字
+                 def newName
+                // 时间戳
+                 def timeNow
+                // 输出文件夹
+                 def outDirectory
+                // 是否为Jenkins打包，输出路径不同
+                 if ("true".equals(IS_JENKINS)) {
+                // BUILD_PATH为服务器输出路径
+                 timeNow = BUILD_TIME
+                 outDirectory = BUILD_PATH_JENKINS
+                // JKApp-v1.0.1-xiaomi-release.apk
+                 newName = APPNAME+"-v"+APP_VERSION + '-' + variant.productFlavors[0].name + '-' + variant.buildType.name + '.apk' }
+                 else {
+                // 本机打包输出在本机路径
+                 timeNow = getCurrentTime()
+                 outDirectory = BUILD_PATH_LOCAL
+                 newName = APPNAME+"-v"+APP_VERSION + '-' + variant.productFlavors[0].name + '-' + variant.buildType.name + '.apk' }
+
+                outputFileName = newName
+//                def buildType = variant.buildType.name
+//                //这里修改apk文件名,格式为 module_flavor-version-time-buildtype.apk
+//                outputFileName = "app_${variant.productFlavors[0].name}-V${defaultConfig.versionName}-${getCurrentTime()}-${buildType}.apk"
+////                outputFileName = fileName
+            }
+        }
+    }
+
+
 }
 
 dependencies {
@@ -30,10 +93,10 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    compile 'io.reactivex.rxjava2:rxjava:2.1.1'
-    compile 'io.reactivex.rxjava2:rxjava:2.0.1'
-    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.1'
+    implementation 'io.reactivex.rxjava2:rxjava:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'com.squareup.retrofit2:retrofit:2.1.0'
+    implementation 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
 }
